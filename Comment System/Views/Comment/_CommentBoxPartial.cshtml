@@ -1,0 +1,15 @@
+﻿@model Comment_System.Models.ViewModels.CommentViewModel;
+
+<!-- Post Comment-->
+<form asp-controller="Comment" asp-action="AddComment" method="POST">
+    <div class="d-flex flex-row add-comment-section mt-4 mb-4">
+        <img class="img-fluid img-responsive rounded-circle mr-2" src="https://i.imgur.com/qdiP4DB.jpg" width="38">
+        <input type="text" asp-for="@Model.CommentContent.Body" class="form-control mr-3" placeholder="Add comment">
+        <!-- <input type="text" asp-for="" value=""> -->
+
+
+        <input type="submit" class="btn btn-primary" value="Comment">
+        <br><br>
+        <span asp-validation-for="@Model.CommentContent.Body" class="text-danger"></span>
+    </div>
+</form>
