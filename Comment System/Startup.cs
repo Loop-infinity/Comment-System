@@ -59,6 +59,9 @@ namespace Comment_System
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(name: "Comment",
+                pattern: "Comment/{id1}/{*id2}",
+                defaults: new { controller = "Comment", action = "Edit" });
                 endpoints.MapRazorPages();
             });
         }

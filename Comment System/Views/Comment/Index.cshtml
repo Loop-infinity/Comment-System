@@ -4,44 +4,58 @@
     ViewData["Title"] = "Comments";
 }
 
+@using Microsoft.AspNetCore.Identity
+@using Comment_System.Areas.Identity.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <div class="container mt-5 mb-5">
     <div class="d-flex justify-content-center row">
         <div class="d-flex flex-column col-md-8">
-          
+
             <div class="coment-bottom bg-white p-2 px-4">
 
+                <!-- Post Comment -->
                 @{var modelForPartialView = new Comment_System.Models.ViewModels.CommentViewModel();}
                 <partial name="_CommentBoxPartial.cshtml" model="@modelForPartialView" />
-                <!-- Post Comment
-    <form asp-controller="Comment" asp-action="AddComment" method="POST">
-        <div class="d-flex flex-row add-comment-section mt-4 mb-4"><img class="img-fluid img-responsive rounded-circle mr-2" src="https://i.imgur.com/qdiP4DB.jpg" width="38">
-        <input type="text" name="body" class="form-control mr-3" placeholder="Add comment">
-        <input type="hidden" name="">
-
-        <input type="submit" class="btn btn-primary" value="Comment"></input></div>
-    </form>-->
+                @{int i = 0; }
                 <!-- Comments-->
                 @foreach (var comment in Model)
                 {
-                    <div class="commented-section mt-2">
+
+                    <div class="commented-section bg-light rounded-lg p-3 mb-3 mt-2">
                         <div class="d-flex flex-row align-items-center commented-user">
-                            <h5 class="mr-2">@comment.ApplicationUser.FirstName @comment.ApplicationUser.LastName</h5><span class="dot mb-1"></span><span class="mb-1 ml-2">@comment.CommentContent.CommentTimeStamp</span>
+                            <h5 class="mr-2" style="color: darkblue">@comment.ApplicationUser.FirstName @comment.ApplicationUser.LastName</h5><span class="dot mb-1"></span><span class="mb-1 ml-2 font-weight-bold">@comment.CommentContent.CommentTimeStamp</span>
                         </div>
                         <div class="comment-text-sm"><span>@comment.CommentContent.Body</span></div>
                         <div class="reply-section">
                             <div class="d-flex flex-row align-items-center voting-icons">
-                                <i class="fa fa-sort-up fa-2x mt-3 hit-voting"></i><i class="fa fa-sort-down fa-2x mb-3 hit-voting"></i><span class="ml-2">15</span><span class="dot ml-2"></span>
+                                <i class="fa fa-sort-up fa-2x mt-3 hit-voting"></i><i class="fa fa-sort-down fa-2x mb-3 hit-voting"></i><span class="ml-2"></span><span class="dot ml-2"></span>
                                 <h6 class="ml-2 mt-1">Reply</h6>
                             </div>
                         </div>
-                        <div class="row" id="hello">
-                            <div class="col-3"><a asp-controller="Comment" asp-action="Edit" asp-route-id="@comment.CommentContent.CommentContentId"><h6>Edit</h6></a></div>
-                            <div class="col-3"><button style="width: 100px"class="edit-history-btn bg-white border-0 pl-1 pr-1" value="@comment.Comment.CommentID"><h6>Edit History</h6></button></div>
-                        </div>
-                       
-                    </div>
+                        <div class="row">
+                            @if ((comment.ApplicationUser.Id == UserManager.GetUserId(User)) && SignInManager.IsSignedIn(User))
+                            {
+                                <div class="col-3">
+                                    <a asp-controller="Comment" class="btn btn-primary" asp-action="Edit" asp-route-id1="@comment.CommentContent.CommentContentId" asp-route-id2="@comment.ApplicationUser.Id">
+                                        <h6>Edit</h6>
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    <a asp-controller="Comment" class="btn btn-danger" asp-action="Delete" asp-route-id1="@comment.Comment.CommentID" asp-route-id2="@comment.ApplicationUser.Id">
+                                        <h6>Delete</h6>
+                                    </a>
+                                </div>
+                            }
 
+                            <div class="col-4"><button count="@ViewBag.CommentCount[i]" class="mt-2 edit-history-btn edit-history-btn-hidden btn-focus-remove pl-1 pr-1" value="@comment.Comment.CommentID"><h6>Edit History</h6></button></div>
+                        </div>
+
+                    </div>
+                    i++;
+                    
                 }
 
 
@@ -50,7 +64,7 @@
     </div>
 </div>
 
-@section Scripts{ 
-    
+@section Scripts{
+
     <script type="text/javascript" src="~/js/Comments.js"></script>
 }

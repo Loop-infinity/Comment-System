@@ -35,6 +35,7 @@ namespace Comment_System.Controllers
             List<CommentViewModel> commentViewModel = new List<CommentViewModel>();
             var commentCon = _db.CommentContent.OrderByDescending(c => c.CommentTimeStamp);
 
+            ViewBag.CommentCount = new List<int>();
             //commentViewModel.Comment = comment;
             for (int i=0; i<model.Count;i++)
             {
@@ -44,8 +45,10 @@ namespace Comment_System.Controllers
                 //cvm.Comment = comments[i];
                 cvm.Comment = model[i].Comment;
 
-                var cc = _db.CommentContent.Where(c => c.CommentId == model[i].Comment.CommentID).OrderByDescending(c => c.CommentTimeStamp).FirstOrDefault();
-                cvm.CommentContent = cc;
+                var cc = _db.CommentContent.Where(c => c.CommentId == model[i].Comment.CommentID).OrderByDescending(c => c.CommentTimeStamp);
+                ViewBag.CommentCount.Add(cc.Count());
+
+                cvm.CommentContent = cc.FirstOrDefault();
                 commentViewModel.Add(cvm);
 
             }
@@ -54,6 +57,7 @@ namespace Comment_System.Controllers
                         .Join(_db.CommentContent, p => p.CommentID, n => n.CommentId,
                         ((comment, commentContent) => new CommentViewModel { Comment = comment, CommentContent = commentContent }))
                         .ToList(); */
+            
             
             //var comments = await _db.Comment.ToListAsync();
             return View(commentViewModel);
@@ -88,18 +92,48 @@ namespace Comment_System.Controllers
             return RedirectToAction("Index");
         }
 
-
-        public IActionResult Edit(int? id)
+        [Authorize]
+        public IActionResult Edit(int? id1, string id2)
         {
-            if(id != null)
+            if(_userManager.GetUserId(User) != id2)
             {
-                return View(_db.CommentContent.Find(id));
+                return RedirectToAction("Index");
+            }
+
+            if(id1 != null)
+            {
+                return View(_db.CommentContent.Find(id1));
             }
 
 
             return NotFound();
         }
 
+        [Authorize]
+        public IActionResult Delete(int? id1, string id2)
+        {
+            if (_userManager.GetUserId(User) != id2)
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (id1 != null)
+            {
+                var commentFromDb = _db.Comment.Find(id1);
+
+                _db.Comment.Remove(commentFromDb);
+                _db.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+
+
+            return NotFound();
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(CommentContent commentContent)
         {
             if (ModelState.IsValid)
@@ -129,6 +163,8 @@ namespace Comment_System.Controllers
             return NotFound();
             
         }
+
+
 
     }
 

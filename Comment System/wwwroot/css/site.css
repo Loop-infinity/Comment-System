@@ -106,3 +106,22 @@ body {
 .hit-voting {
     cursor: pointer
 }
+
+.btn-focus-remove:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.edit-history-btn-hidden{
+    display: none;
+}
+
+.edit-history-btn {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+    /*optional*/
+    /*input has OS specific font-family*/
+    color: #069;
+    cursor: pointer;
+}
